@@ -1,15 +1,20 @@
 import Product from "../Models/ProductModel.js";
 import Order from "../Models/OrderModel.js";
 import User from "../Models/UserModel.js"
+import Cart from "../Models/CartModel.js"
+import axios from "axios";
 
 //get all orders
 export const getOrders = (async(req, res)=>{
     try {
         const orders = await Order.find({}).populate({
-            path: "items",
+            path: "cartItems",
             populate:{
-                path: "item",
-                select: "_id ItemName price",
+                path: "cartItem",
+                select: "_id item qty",
+                populate: {
+                    path: "item"
+                }
             }
           }).populate({
               path: "customer",
@@ -25,10 +30,13 @@ export const getOrders = (async(req, res)=>{
 export const getOrder = (async(req, res)=>{
     try {
         const order = await Order.findById({ _id: req.params.id }).populate({
-            path: "items",
+            path: "cartItems",
             populate:{
-                path: "item",
-                select: "_id ItemName price",
+                path: "cartItem",
+                select: "_id item qty",
+                populate: {
+                    path: "item"
+                }
             }
           }).populate({
             path: "customer",
@@ -48,29 +56,29 @@ export const createOrder = (async(req, res)=>{
         const user = await User.findById(order.customer)
         let tot = 0;
 
-        // let orders = [];
-
         //reduce quantity and add to sold items 
-        await Promise.all(order.items.map(async(i)=>{
-            let product = await Product.findById(i.item);
-            product.quantity -= i.qty;
-            tot += product.price * i.qty;
-            // orders.push({
-            //     itemName: product.ItemName, 
-            //     qty: i.qty,
-            //     unitPrice: product.price,
-            //     email: user.email
-            // })
-            await product.save();
+        await Promise.all(order.cartItems.map(async(i)=>{
+            let cartItem = await Cart.findById(i.cartItem).populate({
+                path: "item"
+            });
+
+            let product = await Product.findById(cartItem.item._id);
+
+            product.quantity -= cartItem.qty;
+            tot += cartItem.item.price * cartItem.qty;
+
+            await Product.findByIdAndUpdate(product._id, product);
         }))
 
         order.totalPrice = tot;
-  
-        // await Promise.all(order.items.map(async(i)=>{//delete all the cart items from the order
-        //     await Cart.deleteMany({item: i.item});
-        // }))
 
         const savedOrder = await order.save();
+        const emailData = {
+            email: user.email,
+            subject: 'Order Placed',
+            message: `Your Order has been placed, Your order id is ${savedOrder._id}`
+        }
+        await axios.post(`${process.env.EMAIL_ENDPOINT}`, emailData);
 
         return res.status(201).send(savedOrder);
     } catch (error) {

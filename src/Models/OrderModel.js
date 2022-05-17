@@ -1,16 +1,12 @@
 import mongoose from 'mongoose';
 
 const OrderSchema = new mongoose.Schema({
-  items:[
+  cartItems:[
     {
-        item:{
+      cartItem:{
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Product"
+            ref: "Cart"
         },
-        qty:{
-            type: Number,
-            required: true
-        }
     }
   ],
   totalPrice: {
@@ -22,19 +18,6 @@ const OrderSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  status:{
-    type: String,
-    required: true,
-    default: "Pending"
-  },
-  payment:{
-    paymentMethod:{
-      type: String
-    },
-    status:{
-      type: String
-    }
-  }
 },{ timestamps: true });
 
 let Order = mongoose.model("Order", OrderSchema);
