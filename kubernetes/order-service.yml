@@ -28,9 +28,12 @@ spec:
   selector:
     app: cart-service
   type: LoadBalancer
-  loadBalancerIP: 34.133.243.137
   ports:
     - protocol: TCP
       port: 5000
       targetPort: 5000
-      nodePort: 30001
+      nodePort: 3000
+status:
+  loadBalancer:
+    ingress:
+    - ip: 34.133.243.137
