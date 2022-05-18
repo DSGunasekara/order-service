@@ -32,7 +32,7 @@ spec:
     - protocol: TCP
       port: 5000
       targetPort: 5000
-      nodePort: 3000
+      nodePort: 30000
 status:
   loadBalancer:
     ingress:
