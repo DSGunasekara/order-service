@@ -26,10 +26,14 @@ metadata:
   name: order-service-service
 spec:
   selector:
-    app: cart-service
-  type: LoadBalancer  
+    app: order-service
+  type: LoadBalancer
   ports:
     - protocol: TCP
       port: 5001
       targetPort: 5001
       nodePort: 30001
+status:
+  loadBalancer:
+    ingress:
+    - ip: 34.66.12.236
