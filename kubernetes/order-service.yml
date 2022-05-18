@@ -31,3 +31,4 @@ spec:
     - protocol: TCP
       port: 5001
       targetPort: 5001
+      nordPort: 30001
