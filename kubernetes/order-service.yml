@@ -27,7 +27,6 @@ metadata:
 spec:
   selector:
     app: order-service
-  type: LoadBalancer
   ports:
     - protocol: TCP
       port: 5001
