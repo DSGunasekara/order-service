@@ -32,8 +32,3 @@ spec:
     - protocol: TCP
       port: 5001
       targetPort: 5001
-      nodePort: 30001
-status:
-  loadBalancer:
-    ingress:
-    - ip: 34.66.12.236
